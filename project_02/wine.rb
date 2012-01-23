@@ -1,22 +1,28 @@
 require 'rubygems'
 require 'sqlite3'
-require 'yaml'
 
-puts "Listing all the wine in the database:\n\n" 
+FILENAME = "wine.db"
+SELECT_QUERY = "SELECT * FROM wine"
+INSERT_STATEMENT = "INSERT into wine(name, price, purchase_date, drunk_date, rating, comment) VALUES(?, ?, ?, ?, ?, ?)"
 
-db = SQLite3::Database.new("wine.db")
+puts "Listing all the wine in the database:" 
+puts
 
-db.execute("SELECT * FROM wine") do |row|
-  puts row[1]
-  puts "Price: #{row[2]}"
-  puts "Date Purchased: #{row[3]}"
-  puts "Date Drunk: #{row[4]}"
-  puts "Rating: #{row[5]}"
-  puts "Comment: #{row[6]}"
-  puts "\n"
+db = SQLite3::Database.new(FILENAME)
+db.results_as_hash = true
+
+db.execute(SELECT_QUERY) do |row|
+  puts row['name'];
+  puts "Price: #{row['price']}"
+  puts "Date Purchased: #{row['date_purchased']}"
+  puts "Date Drunk: #{row['drunk_date']}"
+  puts "Rating: #{row['rating']}"
+  puts "Comment: #{row['comment']}"
+  puts
 end
 
-puts "Enter the attributes of a new wine:\n"
+puts "Enter the attributes of a new wine:"
+puts
 print "Name: "
 name = gets.chomp
 
@@ -35,7 +41,8 @@ rating = gets.chomp
 print "Comment: "
 comment = gets.chomp
 
-sql = "INSERT into wine(name, price, purchase_date, drunk_date, rating, comment) VALUES('#{name}', '#{price}', '#{purchase_date}', '#{date_drunk}', '#{rating}', '#{comment}')"
-db.execute(sql)
+db.execute(INSERT_STATEMENT, [name, price, purchase_date, date_drunk, rating, comment])
+
+db.close
 
 puts "\nNew wine saved!"
