@@ -1,0 +1,4 @@
+Wines Screen
+
+SELECT name, vintage, price, rating, date_purchased, drunk_date, comment FROM wines WHERE id=wine_id;
+SELECT name FROM grapes IN (SELECT grape_id FROM grapes_wines WHERE wine_id=wine_id);
