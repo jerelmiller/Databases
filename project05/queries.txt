@@ -1,6 +1,8 @@
 Wines Show 01 Screen
   Assume wine_id is given
 
+  1 OR 2 QUERIES
+
 SELECT name, vintage, price, rating, purchase_date, drunk_date, comment FROM wines WHERE id = wine_id;
 SELECT grapes.name FROM grapes WHERE grapes.id IN (SELECT grape_id FROM grapes_wines WHERE grapes_wines.wine_id = wine_id);
 SELECT regions.name FROM wineries, wines, vineyards, regions WHERE vineyards.region_id = regions.id AND vineyards.winery_id = wineries.id AND wineries.id = wines.winery_id AND wines.id = wine_id;
@@ -8,6 +10,8 @@ SELECT regions.name FROM wineries, wines, vineyards, regions WHERE vineyards.reg
 
 Wines Show 02 Screen
   Assume grape_id is given
+
+  2 QUERIES
 
 SELECT name FROM grapes WHERE id = grape_id;
 SELECT wines.name FROM wines, grapes_wines WHERE wines.id = grapes_wines.wine_id AND grapes_wines.grape_id = grape_id;
@@ -17,6 +21,9 @@ SELECT vineyards.name FROM vineyards, grapes_vineyards WHERE vineyards.id = grap
 Wines Show 03 Screen
   Assume region_id is given
 
+  DOESNT WORK WITH EXISTING SCHEMA
+  NO EASY WAY TO EXACLTY DETERMINE REGION
+
 SELECT name FROM regions WHERE id = region_id;
 SELECT countries.name FROM countries, regions WHERE countries.id = regions.country_id AND regions.id = region_id;
 SELECT distinct(wines.name) FROM wines, wineries, vineyards WHERE wines.winery_id = wineries.id AND wineries.id = vineyards.winery_id AND vineyards.region_id = region_id;
@@ -24,6 +31,9 @@ SELECT distinct(wines.name) FROM wines, wineries, vineyards WHERE wines.winery_i
 
 Wines Show 04 Screen
   Assume winery_id is given
+
+  NO WAY TO DETERMINE REGION UNLESS GIVEN REGION_ID
+  ABOUT 3 QUERIES
 
 SELECT name FROM wineries WHERE id = winery_id;
 SELECT regions.name FROM regions, vineyards WHERE regions.id = vineyards.region_id AND vineyards.winery_id = winery_id;
@@ -34,11 +44,18 @@ SELECT count(*), grapes.name FROM grapes_wines, wines, grapes WHERE grapes.id = 
 
 
 Wines Show 05 Screen
+
+1 QUERY
+ARGUE THAT VINTAGES NEED TO BE EXTRACTED OUT TO OWN ENTITY
   
 SELECT distinct(vintage), name FROM wines ORDER BY vintage;
 
 
 Wines New Screen
+
+POSSIBLY ARGUE NEED NEW TABLE FOR RATINGS OR HARDCODED INTO APP
+MISSING ASSOCIATION BETWEEN REGION AND WINE
+COMPLAIN ABOUT REGIONS
 
 To get existing data for form fields:
   * region_id used to denote the currently selected region from the drop down menu
