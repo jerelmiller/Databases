@@ -1,4 +1,77 @@
-Wines Screen
+Wines Show 01 Screen
+  Assume wine_id is given
 
-SELECT name, vintage, price, rating, date_purchased, drunk_date, comment FROM wines WHERE id=wine_id;
-SELECT name FROM grapes IN (SELECT grape_id FROM grapes_wines WHERE wine_id=wine_id);
+SELECT name, vintage, price, rating, purchase_date, drunk_date, comment FROM wines WHERE id = wine_id;
+SELECT grapes.name FROM grapes WHERE grapes.id IN (SELECT grape_id FROM grapes_wines WHERE grapes_wines.wine_id = wine_id);
+SELECT regions.name FROM wineries, wines, vinyards, regions WHERE vinyards.region_id = regions.id AND vinyards.winery_id = wineries.id AND wineries.id = wines.winery_id AND wines.id = wine_id;
+
+
+Wines Show 02 Screen
+  Assume grape_id is given
+
+SELECT name FROM grapes WHERE id = grape_id;
+SELECT wines.name FROM wines, grapes_wines WHERE wines.id = grapes_wines.wine_id AND grapes_wines.grape_id = grape_id;
+SELECT vinyards.name FROM vinyards, grapes_vinyards WHERE vinyards.id = grapes_vinyards.vinyard_id AND grapes_vinyards.grape_id = grape_id;
+
+
+Wines Show 03 Screen
+  Assume region_id is given
+
+SELECT name FROM regions WHERE id = region_id;
+SELECT countries.name FROM countries, regions WHERE countries.id = regions.country_id AND regions.id = region_id;
+SELECT distinct(wines.name) FROM wines, wineries, vinyards WHERE wines.winery_id = wineries.id AND wineries.id = vinyards.winery_id AND vinyards.region_id = region_id;
+
+
+Wines Show 04 Screen
+  Assume winery_id is given
+
+SELECT name FROM wineries WHERE id = winery_id;
+SELECT regions.name FROM regions, vinyards WHERE regions.id = vinyards.region_id AND vinyards.winery_id = winery_id;
+SELECT countries.name FROM countries, regions, vinyards WHERE countries.id = regions.country_id AND vinyards.region_id = regions.id AND vinyards.winery_id = winery_id;
+SELECT count(*) FROM wines WHERE wines.winery_id = winery_id;
+SELECT name FROM wines WHERE wines.winery_id = winery_id;
+SELECT count(*), grapes.name FROM grapes_wines, wines, grapes WHERE grapes.id = grapes_wines.grape_id AND wines.winery_id = winery_id AND wines.id = grapes_wines.wine_id AND grapes_wines.grape_id IN (SELECT grapes.id FROM grapes, grapes_wines, wines WHERE grapes.id = grapes_wines.grape_id AND grapes_wines.wine_id = wines.id AND wines.winery_id = winery_id) GROUP BY grapes_wines.grape_id;
+
+
+Wines Show 05 Screen
+  
+SELECT distinct(vintage), name FROM wines ORDER BY vintage;
+
+
+Wines New Screen
+
+To get existing data for form fields:
+  * region_id used to denote the currently selected region from the drop down menu
+
+SELECT wineries.name, wineries.id FROM wineries, vinyards WHERE vinyards.wineries_id = wineries.id AND vinyards.region_id = region_id;
+SELECT name, id FROM regions;
+SELECT name, id FROM grapes;
+SELECT distinct(vintage) FROM wines;
+SELECT distinct(rating) FROM wines;
+
+To Insert the entered data:
+  * last_insert_rowid() is used to get the id of the wine that was just inserted into the database
+
+INSERT INTO wines(name, winery_id, vintage, price, rating, purchase_date, date_drunk, comment) VALUES (?, ?, ?, ?, ?, ?, ?);
+INSERT INTO grapes_wines(grape_id, wine_id) values (?, (SELECT last_insert_rowid()));
+
+
+Wines Edit Screen
+  * wine_id used to denote the currently selected wine on the edit screen
+  * region_id used to denote the currently selected region from the drop down menu
+
+To get existing data onto the screen:
+
+SELECT wines.name, wines.vintage, wines.price, wines.rating, wines.purchase_date, wines.date_drunk, wines.comment, wines.winery_id, wineries.name FROM wines, wineries WHERE wines.winery_id = wineries.id AND wines.id = wine_id;
+SELECT distinct(vintage) FROM wines;
+SELECT distinct(rating) FROM wines;
+SELECT wineries.name, wineries.id FROM wineries, vinyards WHERE vinyards.wineries_id = wineries.id AND vinyards.region_id = region_id;
+SELECT grapes.name, grapes.id FROM wines, grapes, grapes_wines WHERE grapes.id IN (SELECT grape_id FROM grapes_wines WHERE grapes_wines.wine_id = wine_id);
+SELECT regions.name, regions.id FROM wineries, wines, vinyards, regions WHERE vinyards.region_id = regions.id AND vinyards.winery_id = wineries.id AND wineries.id = wines.winery_id AND wines.id = wine_id;
+SELECT name, id FROM regions;
+
+To insert the changed data:
+
+UPDATE wines SET name = ?, price = ?, rating = ?, purchase_date = ?, date_drunk = ?, winery_id = ? WHERE id = ?;
+DELETE * FROM grapes_wines WHERE grape_id = ?;
+INSERT INTO grapes_wines(grape_id, wine_id) values(?, wine_id);
