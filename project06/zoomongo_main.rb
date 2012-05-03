@@ -17,6 +17,9 @@ class Animal
   many :users
   many :feeds
 
+  belongs_to :feed
+  belongs_to :habitat
+
   key :name, String, :required => true
   key :description, String
   key :cuteness, Integer
@@ -149,7 +152,9 @@ end
 def list_animals
   puts
   Animal.all.each do |animal|
-    puts "#{animal}"
+    print animal
+    print " - habitat: #{animal.habitat}" unless animal.habitat.nil?
+    puts
   end
   puts
 end
@@ -167,7 +172,9 @@ end
 # animal in the database.
 def create_animal
   name, description, cuteness, habitat = capture_animal_attributes
-  # TODO
+  
+  animal = Animal.new(:name => name, :description => description, :cuteness => cuteness, :habitat => habitat)
+  animal.save!
 end
 
 def execute_command(command)
